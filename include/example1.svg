@@ -1,0 +1,68 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="20cm" height="16cm" viewBox="0 0 1200 600"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <title>Example rect - simple rectangle wiuth units</title>
+  <desc>Sample test description, nigga</desc>
+  <circle cx = "1mm"/>
+  <rect x = "1px"/>
+  <path d ="1cm"/>
+
+    <g fill="blue">
+        <circle cx = "2cm" r = "-1"/>
+        <rect x = "2mm" height="11" width="-1"/>
+        <path d = "2px"/>
+        <circle cx = "3cm"/>
+        <rect x = "3cm"/>
+        <path d = "3cm"/>
+
+        <g fill="blue">
+           <circle cx = "4px" r = "1"/>
+           <rect x = "4"/>
+           <path d = "4"/>
+
+           <g fill="blue">
+             <circle cx = "5"/>
+             <rect x = "5"  height="10" width="10"/>
+             <path d = "5"/>
+             <circle cx = "6"/>
+             <rect x = "6"/>
+             <path/>
+
+               <g fill="blue">
+                 <circle cx = "7"/>
+                 <rect x = "7"  height="10" width="10"/>
+                 <path d = "7"/>
+                    <g fill="blue">
+                      <circle cx = "100" r = "1" />
+                      <rect x = "100"/>
+                      <path d = "100"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+
+        <g fill="blue">
+            <circle cx = "8"/>
+            <rect x = "8"  height="10" width="10"/>
+            <path d = "8"/>
+            <circle cx = "82"/>
+            <rect x = "82"  height="10" width="10"/>
+            <path d = "82"/>
+
+            <g fill="blue" shape="squiggles">
+                <circle cx = "101"/>
+                <rect x = "101"/>
+                <path d = "101"/>
+                <g fill="blue">
+                    <circle cx = "102" r = "1"/>
+                    <rect x = "102"/>
+                    <path d = "102"/>
+                </g>
+            </g>
+       </g>
+  </g>
+
+
+</svg>

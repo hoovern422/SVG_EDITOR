@@ -1,0 +1,64 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="20cm" height="16cm" viewBox="0 0 1200 600"
+     xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <title>Example rect - simple rectangle wiuth units</title>
+  <desc>Sample test description, nigga</desc>
+  <circ cx = "1"/>
+  <rect x = "1"/>
+
+    <g fill="blue">
+        <circ cx = "2"/>
+        <rect x = "2"/>
+        <path d = "2"/>
+        <circ cx = "3"/>
+        <rect x = "3"/>
+        <path d = "3"/>
+
+        <g fill="blue">
+           <circ cx = "4"/>
+           <rect x = "4"/>
+           <path d = "4"/>
+
+           <g fill="blue">
+             <circ cx = "5"/>
+             <rect x = "5"/>
+             <path d = "5"/>
+             <circ cx = "6"/>
+             <rect x = "6"/>
+             <path d = "6"/>
+
+               <g fill="blue">
+                 <circ cx = "7"/>
+                 <rect x = "7"/>
+                 <path d = "7"/>
+                    <g fill="blue">
+                      <circ cx = "100"/>
+                      <rect x = "100"/>
+                      <path d = "100"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+
+        <g fill="blue">
+            <circ cx = "8"/>
+            <rect x = "8"/>
+            <path d = "8"/>
+
+            <g fill="blue">
+                <circ cx = "101"/>
+                <rect x = "101"/>
+                <path d = "101"/>
+                <g fill="blue">
+                    <circ cx = "102"/>
+                    <rect x = "102"/>
+                    <path d = "102"/>
+                </g>
+            </g>
+       </g>
+  </g>
+
+
+</svg>
