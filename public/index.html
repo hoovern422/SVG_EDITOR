@@ -1,0 +1,103 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head> 
+    <title>SVG Image Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="SVG Image Viewer">
+    <meta name="keywords" content="SVG Image Viewer">
+    <meta name="author" content="Nickolas Hoover">
+    <!-- Load jquery, bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <!-- Custom CSS End -->
+</head>
+
+
+<body>
+    <h1>SVG Image Viewer</h1>
+    <hr>
+    <br>
+    <h2><b>File Log Panel</b></h2>
+    <div id="table-wrapper">
+        <table style="width:100%">
+            <!-- this is the top Row -->
+            <thead>
+                <tr>
+                <th>Image (Click to Download)</th>
+                <th>File Name (Click to Download)</th>
+                <th>File size</th>
+                <th>Number of Rectangles</th>
+                <th>Number of Circles</th>
+                <th>Number of Paths</th>
+                <th>Number of Groups</th>
+                </tr>
+            </thead>
+
+        <tbody>
+        </tbody>
+
+        </table>
+    </div>
+        <div id="submitSVG">
+            <form ref="submitSVGform", id="submitSVGform">
+                <label for="myfile">Choose an SVG file and click submit to upload:  </label>
+                <input type="file" id="myfile" name="myfile"><br>
+                <input type="submit" class ="btn btn-secondary">
+            </form>
+        </div>
+    
+    <div class="dropdown">
+        <br>
+        <button class="dropbtn">Select Image</button>
+        <div class="dropdown-content", id="dropdown-content">
+        </div>
+    </div>
+    <br>
+    <br>
+    <h3><b>SVG View Panel</b></h3>
+    <div id="SVGview"></div>
+          <table id='viewTable', style="height:80%">
+              <thead>
+              </thead>
+  
+              <tbody>
+              </tbody>
+         </table>
+    </div>
+    <hr>
+    <br>
+    <h3><b>Create New SVG Image</b></h3>
+    Enter data for a new SVG image below.<br>
+    <br>
+    <form ref='someform'
+          id='someform'>
+          <div class="form-group">
+                <label for="entryBox">New SVG Image Title</label>
+                <input type="text" class="form-control" id="entryBox" value="" placeholder="Enter a title for your image">
+            </div>
+        <div class="form-group">
+            <input type='submit' class="btn btn-secondary">
+        </div>
+    </form>
+    <br>
+    <form ref='someform1'
+          id='someform1'>
+          <div class="form-group">
+                <label for="entryBox">New SVG Image Description</label>
+                <input type="text" class="form-control" id="entryBox" value="" placeholder="Enter a description for your image">
+            </div>
+        <div class="form-group">
+            <input type='submit' class="btn btn-secondary">
+        </div>
+    </form>
+    <br>
+    <!-- Leave me at the bottom of body -->
+    <script src="/index.js"></script>
+</body>
+</html>
+
