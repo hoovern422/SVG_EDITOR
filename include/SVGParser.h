@@ -2,12 +2,14 @@
 #define SVGPARSER_H
 
 #include <stdio.h>
+#include <stdbool.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/xmlschemastypes.h>
 #include "LinkedListAPI.h"
+# include <math.h>
 
 typedef enum COMP{
     SVG_IMAGE, CIRC, RECT, PATH, GROUP
@@ -119,6 +121,11 @@ typedef struct {
     //All objects in the list will be of type Attribute.  It must not be NULL.  It may be empty.  
     //Do not put the namespace here, since it already has its own field
     List* otherAttributes;
+    //
+    List *allRectangles;
+    List *allCircles;
+    List *allPaths;
+    List *allGroups;
 } SVGimage;
 
 //A1
@@ -168,13 +175,13 @@ void deleteSVGimage(SVGimage* img);
  */
 
 // Function that returns a list of all rectangles in the image.  
-List* getRects(SVGimage* img);
+void getAllRects(SVGimage* img);
 // Function that returns a list of all circles in the image.  
-List* getCircles(SVGimage* img);
+void getAllCircles(SVGimage* img);
 // Function that returns a list of all groups in the image.  
-List* getGroups(SVGimage* img);
+void getAllGroups(SVGimage* img);
 // Function that returns a list of all paths in the image.  
-List* getPaths(SVGimage* img);
+void getAllPaths(SVGimage* img);
 
 
 /* For the four "num..." functions below, you need to search the SVG image for components  that match the search 
@@ -248,7 +255,7 @@ SVGimage* createValidSVGimage(char* fileName, char* schemaFile);
     doc - a pointer to a SVGimage struct
  	fileName - the name of the output file
  **/
-bool writeSVGimage(SVGimage* image, char* fileName);
+bool writeSVGimage(SVGimage* image, char* fileName, char *schemaFile);
 
 /** Function to setting an attribute in an SVGimage or component
  *@pre
@@ -373,7 +380,7 @@ char* SVGtoJSON(const SVGimage* image);
 *@return A newly allocated and initialized SVGimage struct
 *@param str - a pointer to a string
 **/
-void JSONtoSVG(const char* svgString, char *name);
+void JSONtoSVG(const char* svgString, char *name, char *schemaFile);
 
 /** Function to converting a JSON string into a Rectangle struct
 *@pre JSON string is not NULL

@@ -277,7 +277,7 @@ int buildImage(xmlNode *a_node, SVGimage *image)
                 char *attrName = (char *)attr->name;
                 char *cont = (char *)(value->content);
                 if (strcmp((char *)cur_node->name, "svg") == 0)
-                {
+                { 
                     if (attCounter != 0)
                         attributes = realloc(attributes, (attCounter + 1) * sizeof(Attribute *));
                     attributes[attCounter] = calloc(1, sizeof(Attribute));
@@ -732,26 +732,28 @@ void deleteAttribute(void *data)
     return;
 }
 
-Circle *createCircle(xmlNode *node)
+Circle *createCircle(xmlNode *curNode)
 {
-    if (node == NULL)
+    if (curNode == NULL)
         return NULL;
     Circle *circ = calloc(1, sizeof(Circle));
     xmlAttr *attr;
     xmlNode *value;
     Attribute **attributes = calloc(1, sizeof(Attribute *));
+
     char *attrName;
     char *cont;
     char *pend;
     int i = 0;
     int units = 0;
     float test = 0.0;
+
     circ->cx = 0.0;
     circ->cy = 0.0;
     circ->r = 0.0;
     circ->otherAttributes = initializeList(&attributeToString, &deleteAttribute, &compareAttributes);
 
-    for (attr = node->properties; attr != NULL; attr = attr->next)
+    for (attr = curNode->properties; attr != NULL; attr = attr->next)
     {
         value = attr->children;
         attrName = (char *)(attr->name);
@@ -760,8 +762,10 @@ Circle *createCircle(xmlNode *node)
         test = strtof(cont, &pend);
         if (strcmp(pend, "\0") != 0 && pend != NULL && units == 0)
         {
-            if (strcmp(pend, "cm") == 0 || strcmp(pend, "em") == 0 || strcmp(pend, "px") == 0 || strcmp(pend, "pt") == 0 || strcmp(pend, "pc") == 0 ||
-                strcmp(pend, "ex") == 0 || strcmp(pend, "mm") == 0 || strcmp(pend, "in") == 0)
+            if (strcmp(pend, "cm") == 0 || strcmp(pend, "em") == 0 ||
+                strcmp(pend, "px") == 0 || strcmp(pend, "pt") == 0 || 
+                strcmp(pend, "pc") == 0 || strcmp(pend, "ex") == 0 ||
+                strcmp(pend, "mm") == 0 || strcmp(pend, "in") == 0)
             {
                 strncpy(circ->units, pend, 50);
                 units++;
@@ -794,25 +798,32 @@ Circle *createCircle(xmlNode *node)
 
         else
         {
-            if (i != 0)
+            if (i != 0){
                 attributes = realloc(attributes, (i + 2) * sizeof(Attribute *));
+            }
+
             attributes[i] = calloc(1, sizeof(Attribute));
-            if (attrName != NULL)
+
+            if (attrName){
                 attributes[i]->name = calloc(strlen(attrName) + 1, sizeof(char));
-            else
-                attributes[i]->name = calloc(1, sizeof(char));
-            if (attrName != NULL)
                 strcpy(attributes[i]->name, attrName);
-            else
+            }
+
+            else{
+                attributes[i]->name = calloc(1, sizeof(char));
                 strcpy(attributes[i]->name, "\0");
-            if (cont != NULL)
+            }
+
+            if (cont){
                 attributes[i]->value = calloc(strlen(cont) + 1, sizeof(char));
-            else
-                attributes[i]->value = calloc(1, sizeof(char));
-            if (cont != NULL)
                 strcpy(attributes[i]->value, cont);
-            else
+            }
+
+            else{
+                attributes[i]->value = calloc(1, sizeof(char));
                 strcpy(attributes[i]->value, "\0");
+            }
+
             if (attributes[i] != NULL)
                 insertBack(circ->otherAttributes, attributes[i]);
             i++;
@@ -998,10 +1009,11 @@ void deletePath(void *data)
     return;
 }
 
-Group *createGroup(xmlNode *node)
-{
-    if (node == NULL)
+Group *createGroup(xmlNode *curNode){
+
+    if (curNode == NULL)
         return NULL;
+
     Group *group = calloc(1, sizeof(Group));
     xmlAttr *attr;
     xmlNode *value;
@@ -1014,7 +1026,7 @@ Group *createGroup(xmlNode *node)
     group->paths = initializeList(&pathToString, &deletePath, &comparePaths);
     group->groups = initializeList(&groupToString, &deleteGroup, &compareGroups);
     Attribute **attributes = calloc(1, sizeof(Attribute *));
-    for (attr = node->properties; attr != NULL; attr = attr->next)
+    for (attr = curNode->properties; attr != NULL; attr = attr->next)
     {
         value = attr->children;
         attrName = (char *)attr->name;
@@ -2650,6 +2662,7 @@ void printer(xmlNodePtr root_node){
 }
 /*********************************************************************************************************************************************************************/
 void JSONtoSVG(const char* svgString, char *name){
+    
     if (svgString == NULL) return;
     char *title = calloc(256, sizeof(char));
     char *description = calloc(256, sizeof(char));
@@ -2705,6 +2718,7 @@ void JSONtoSVG(const char* svgString, char *name){
     deleteSVGimage(image);
     return;
 }
+
 Rectangle* JSONtoRect(const char* svgString){
     if (svgString == NULL) return NULL;
     Rectangle *rectangle = calloc(1, sizeof(Rectangle));
