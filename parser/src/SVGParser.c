@@ -2,36 +2,146 @@
 #include "LinkedListAPI.h"
 #include "header.h" 
 
-int main(){
+#define SHELLSCRIPT "\
+#/bin/bash \n\
+{ echo \"\"; } 2> /dev/null > testFileNames.txt\n\
+for file in include/A2-compliantTestFiles/* \n\
+do \n\
+{ echo \"$(basename \"$file\")\"; } 2> /dev/null >> testFileNames.txt\n\
+done \n\
+"
+
+/*int main(int argc, char **argv){
     
-    char *imagePath = calloc(200, sizeof(char));
-    char *schemaFile = calloc(200, sizeof(char));
+    // Get all test file names and store them in a txt file.
+    system(SHELLSCRIPT);
 
-    strcpy(imagePath, "./bin/A2-compliantTestFiles/rects_gg.svg");
-    strcpy(schemaFile, "./include/svg.xsd");
+    // Read file names in the parser.
+    FILE *fptr = fopen("testFileNames.txt", "r");
+    fseek(fptr, 0, SEEK_SET);
 
-    SVGimage *image = createValidSVGimage(imagePath, schemaFile);
-
-    if (validateSVGimage(image, schemaFile)){
-        printf("Valid SVG image\n");
-        printf("namespace: %s\n", image->namespace);
-        printf("Title: %s\n", image->title);
-        printf("Description: %s\n", image->description);
-        printf("Num rects: %d\n", getLength(image->allRectangles));
-        printf("Num circs: %d\n", getLength(image->allCircles));
-        printf("Num paths: %d\n", getLength(image->allPaths));
-        printf("Num groups: %d\n", getLength(image->allGroups));
-        printf("Num attributes: %d\n", numAttr(image));
+    if (!fptr){
+        printf("Error opening file.\n");
+        return -1;
     }
 
-    writeSVGimage(image, "rects_gg_test.svg", schemaFile);
+    char **fileNames = calloc(1, sizeof(char *));
+    char line [256] = "";
+    char path [32] = "include/A2-compliantTestFiles/";
+    char schemaFile [19] = "./include/svg.xsd";
+    int i = 0, j = 0, k = 0, l = 0, start = 0, stop = 0;
 
-    deleteSVGimage(image);
-    free(imagePath);
-    free(schemaFile);
+    while (fgets(line, sizeof(line), fptr)){
+
+        //fgets doesn't cut off the '\n', so we need to manually do it.
+        line[strlen(line) - 1] = '\0';
+
+        if (strcmp(line, "\0") != 0){
+            fileNames[i] = calloc(strlen(line) + strlen(path) + 1, sizeof(char));
+            strcpy(fileNames[i], path);
+            strcat(fileNames[i], line);
+            fileNames = realloc(fileNames, (i+2) * sizeof(char *));
+            i ++;
+        }
+    }
+
+    fclose(fptr);
+
+    SVGimage *image = NULL;
+    char *name, *val;
+    Attribute *attribute;
+    char saveName [200];
+    bool check = false;
+    ListIterator itr;
+    ListIterator itr2;
+    Group *group = NULL;
+
+    printf("\n");
+
+    for (j = 0; j < i; j ++){
+
+        printf("*****************%s*****************\n", fileNames[j]);
+        image = createValidSVGimage(fileNames[j], schemaFile);
+
+        if (!image){
+            printf("Error reading and creating SVG file: %s\n", fileNames[j]);
+        }
+
+        check = validateSVGimage(image, schemaFile);
+
+        if (check){
+
+            printf("namespace: %s\n", image->namespace);
+            printf("Title: %s\n", image->title);
+            printf("Description: %s\n\n", image->description);
+            printf("Num rects: %d\n", getLength(image->allRectangles));
+            printf("Num circs: %d\n", getLength(image->allCircles));
+            printf("Num paths: %d\n", getLength(image->allPaths));
+            printf("Num groups: %d\n", getLength(image->allGroups));
+            printf("length of image->groups = %d\n", getLength(image->groups));
+            printf("Num attributes: %d\n\n", numAttr(image));
+
+        }
+
+        else{
+            printf("Error validating SVG file: %s\n", fileNames[j]);
+        }
+
+        k = 0;
+        l = 0;
+        strcpy(saveName, "\0");
+        while (fileNames[j][k] != '/'){
+            k ++;
+        }
+        k ++;
+        while (fileNames[j][k] != '/'){
+            k ++;
+        }
+        k ++;
+        start = k;
+        while (fileNames[j][k] != '.'){
+            k ++;
+        }
+        stop = k;
+        while (l < stop - start){
+            saveName[l] = fileNames[j][start + l];
+            l ++;
+        }
+        saveName[l] = '_';
+        l ++;
+        saveName[l] = 't';
+        l ++;
+        saveName[l] = 'e';
+        l ++;
+        saveName[l] = 's';
+        l ++;
+        saveName[l] = 't';
+        l ++;
+        saveName[l] = '.';
+        l ++;
+        saveName[l] = 's';
+        l ++;
+        saveName[l] = 'v';
+        l ++;
+        saveName[l] = 'g';
+        l ++;
+        saveName[l] = '\0';
+
+        check = writeSVGimage(image, saveName, schemaFile);   
+
+        if (!check){
+            printf("Error writting SVG file: %s\n", fileNames[j]);
+        }
+
+        free(fileNames[j]);
+        deleteSVGimage(image);
+
+    }
+
+    free(fileNames);
 
     return 0;
-}
+}*/
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -107,7 +217,7 @@ bool checkCircleSVG(xmlNode *curNode){
 
     if (!curNode) return check;
 
-    if (strcmp((char *)curNode->name, "circ") == 0){
+    if (strcmp((char *)curNode->name, "circle") == 0){
         check = true;
     }
 
@@ -753,38 +863,31 @@ void deleteAttribute(void *data)
 
 bool handleObjectInGroup(SVGimage *image, xmlNode *curNode, elementType type){
 
+    if (!image || !curNode) return false;
+
     bool check = true;
-    int numParentNodes = 0;
-    xmlNode *parentNode = NULL;
     Circle *circ = NULL;
     Rectangle *rect = NULL;
     Path *path = NULL;
     Group *group = NULL;
     List *lptr = NULL;
-    ListIterator groupListItr;
-
-    int i = 1;
-
-    // Determine how many non-svg parent groups there are to the group.
-    parentNode = curNode->parent;
-
-    while(strcmp((char *) parentNode->name, "g") == 0){
-        numParentNodes ++;
-        parentNode = parentNode->parent;
-    }
+    ListIterator groupListItr, prevGroupListItr;
 
     // Iterate through all group lists to arrive to the desired group.
     groupListItr = createIterator(image->groups);
 
-    while (i < numParentNodes){
+    do {
 
         while (groupListItr.current->next){
             groupListItr.current = groupListItr.current->next;
         }
-        
+
+        prevGroupListItr = groupListItr;
         groupListItr = createIterator(((Group *) groupListItr.current->data)->groups);
-        i ++;
-    }
+
+    } while(groupListItr.current);
+
+    groupListItr = prevGroupListItr;
 
     // Create and add the object to the back of the desired list.
     if (type == 1) {
@@ -1023,14 +1126,46 @@ void cleanXML(xmlDocPtr doc){
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
+void getAllCircles(SVGimage *image){
+
+    List *circList = image->allCircles;
+    if (!image) return;
+
+    ListIterator circListItr;
+    ListIterator groupItr;
+
+    elementType label = CIRC;
+
+    circListItr = createIterator(image->circles);
+    while (circListItr.current)
+    {
+        insertBack(circList, (Circle *)circListItr.current->data);
+        circListItr.current = circListItr.current->next;
+    }
+
+    if (getLength(image->groups) > 0)
+    {
+        groupItr = createIterator(image->groups);
+        while (groupItr.current)
+        {
+            searchGroupsInGroups(groupItr.current->data, circList, label);
+            groupItr.current = groupItr.current->next;
+        }
+    }
+
+    return;
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 void getAllRects(SVGimage *image){
 
     List *rectList = image->allRectangles;
     if (!image) return;
     ListIterator rectListItr;
     ListIterator groupItr;
-    char *label = calloc(11, sizeof(char));
-    strcpy(label, "rectangle");
+    elementType label = RECT;
 
     rectListItr = createIterator(image->rectangles);
 
@@ -1050,40 +1185,7 @@ void getAllRects(SVGimage *image){
         }
     }
 
-    free(label);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void getAllCircles(SVGimage *image){
-
-    List *circList = image->allCircles;
-    if (!image) return;
-
-    ListIterator circListItr;
-    ListIterator groupItr;
-
-    char *label = calloc(8, sizeof(char));
-    strcpy(label, "circle");
-
-    circListItr = createIterator(image->circles);
-    while (circListItr.current)
-    {
-        insertBack(circList, (Circle *)circListItr.current->data);
-        circListItr.current = circListItr.current->next;
-    }
-
-    if (getLength(image->groups) > 0)
-    {
-        groupItr = createIterator(image->groups);
-        while (groupItr.current)
-        {
-            searchGroupsInGroups(groupItr.current->data, circList, label);
-            groupItr.current = groupItr.current->next;
-        }
-    }
-
-    free(label);
+    return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1096,8 +1198,7 @@ void getAllPaths(SVGimage *image)
     ListIterator imagePathItr;
     ListIterator groupItr;
 
-    char *label = calloc(6, sizeof(char));
-    strcpy(label, "path");
+    elementType label = PATH;
 
     imagePathItr = createIterator(image->paths);
     while (imagePathItr.current )
@@ -1116,7 +1217,7 @@ void getAllPaths(SVGimage *image)
         }
     }
 
-    free(label);
+    return;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -1124,12 +1225,12 @@ void getAllPaths(SVGimage *image)
 void getAllGroups(SVGimage *image)
 {
     List *groupList = image->allGroups;
-    if (image == NULL) return;
+
+    if (!image) return;
 
     ListIterator groupItr;
 
-    char *label = calloc(7, sizeof(char));
-    strcpy(label, "group");
+    elementType label = GROUP; 
 
     if (getLength(image->groups) > 0)
     {
@@ -1141,82 +1242,64 @@ void getAllGroups(SVGimage *image)
         }
     }
 
-    free(label);
+    return;
+
+    groupItr = createIterator(image->allGroups);
+    
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-void searchGroupsInGroups(Group *parentGroup, List *list, char *label){
+void searchGroupsInGroups(Group *parentGroup, List *list, elementType label){
 
-    Group **groupsWithinGroups = calloc(1, sizeof(Group *));
-    ListIterator head;
     ListIterator itr;
-    int groupListLength = 0;
-    int nestedGroupListLength = 0;
-    int numGroupsInGroups = 0;
-    int i = 0;
-    int j = 0;
+    List *lptr = NULL;
+    Group *group = NULL;
 
-    if (strcmp(label, "rectangle") == 0) searchRectanglesInGroup(parentGroup, list);
-    else if (strcmp(label, "circle") == 0) searchCirclesInGroup(parentGroup, list);
-    else if (strcmp(label, "path") == 0) searchPathsInGroup(parentGroup, list);
-    else if (strcmp(label, "group") == 0) insertBack(list, parentGroup);
+    // insert shape to appropriate list
+    if (label == 1) searchCirclesInGroup(parentGroup, list);
+    else if (label == 2) searchRectanglesInGroup(parentGroup, list);
+    else if (label == 3) searchPathsInGroup(parentGroup, list);
+    else if (label == 4) insertBack(list, parentGroup);
 
-    groupListLength = getLength(((List *)(parentGroup->groups)));
+    // determine if the parent group has more groups.
+    lptr = ((List *)(parentGroup->groups));
 
-    if (groupListLength > 0){
+    if (getLength(lptr) > 0){
 
-        itr = createIterator((List *)parentGroup->groups);
+        //if so, iterate through them.
+        itr = createIterator(lptr);
 
+        // Store those groups in groupsWithinGroups.
         while (itr.current){
-
-            nestedGroupListLength = 
-            getLength(((List *)((Group *)(itr.current->data))->groups));
-            
-            if (nestedGroupListLength > 0){
-
-                head = createIterator(((List *)((Group *)(itr.current->data))->groups));
-
-                while (head.current){
-
-                    groupsWithinGroups[i] = (Group *)head.current->data;
-                    i++;
-                    groupsWithinGroups = realloc(groupsWithinGroups,
-                                                    (i + 1) * sizeof(Group *));
-                    head.current = head.current->next;
-                }
-            }
-
-            if (strcmp(label, "rectangle") == 0){
-
-                searchRectanglesInGroup((Group *)(itr.current->data), list);
-            }
-            else if (strcmp(label, "circle") == 0){
-
-                searchCirclesInGroup((Group *)(itr.current->data), list);
-            }
-            else if (strcmp(label, "path") == 0){
-
-                searchPathsInGroup((Group *)(itr.current->data), list);
-            }
-            else if (strcmp(label, "group") == 0){
-
-                insertBack(list, (Group *)(itr.current->data));
-            }
-
+            group = (Group *) itr.current->data;
+            searchGroupsInGroups(group, list, label);
             itr.current = itr.current->next;
         }
 
-        numGroupsInGroups = i;
+    }
 
-        while (j < numGroupsInGroups){
+    return;
 
-            searchGroupsInGroups(groupsWithinGroups[j], list, label);
-            j++;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+void searchCirclesInGroup(Group *group, List *circList)
+{
+    ListIterator circItr;
+    List *lptr;
+    if (getLength((List *)(group->circles)) > 0)
+    {
+        lptr = (List *)(group->circles);
+        circItr = createIterator(lptr);
+        while (circItr.current)
+        {
+            insertBack(circList, (Circle *)circItr.current->data);
+            circItr.current = circItr.current->next;
         }
     }
 
-    free(groupsWithinGroups);
     return;
 }
 
@@ -1234,26 +1317,6 @@ void searchRectanglesInGroup(Group *group, List *rectList)
         {
             insertBack(rectList, (Rectangle *)rectItr.current->data);
             rectItr.current = rectItr.current->next;
-        }
-    }
-
-    return;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
-void searchCirclesInGroup(Group *group, List *circList)
-{
-    ListIterator circItr;
-    List *lptr;
-    if (getLength((List *)(group->circles)) > 0)
-    {
-        lptr = (List *)(group->circles);
-        circItr = createIterator(lptr);
-        while (circItr.current)
-        {
-            insertBack(circList, (Circle *)circItr.current->data);
-            circItr.current = circItr.current->next;
         }
     }
 
@@ -1353,13 +1416,15 @@ bool validateCircles(SVGimage *image){
             return check;
         }
 
-       //get all other attributes from the paths in the image
+       //get all other attributes from the circles in the image
         lptr = circle->otherAttributes;
         
         if (!validateOtherAttributes(lptr)){
             check = false;
             return check;
         }
+
+        circItr.current = circItr.current->next;
     }
 
     return check;
@@ -1388,7 +1453,7 @@ bool validateRectangles(SVGimage *image){
             return check;
         }
 
-        //get all other attributes from the paths in the image
+        //get all other attributes from the rectangles in the image
         lptr = rectangle->otherAttributes;
         
         if (!validateOtherAttributes(lptr)){
@@ -1829,13 +1894,11 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile){
 
     // build/validate an SVG image.
     rootElement = xmlDocGetRootElement(doc);
-
     valid = buildSVGimage(rootElement, image);
     getAllRects(image);
     getAllCircles(image);
     getAllPaths(image);
     getAllGroups(image);
-
     if (valid) valid = validateSVGimage(image, schemaFile);
 
     if (!valid){
@@ -2848,6 +2911,7 @@ bool modifyOtherAttributes(List *lptr, Attribute *attributeToAdd){
     return check;
 }
 /////////////////////////////////////////////////////////////////////////////////////////
+
 char *groupToString(void *data)
 {
     if (data == NULL)
@@ -2948,29 +3012,6 @@ char *groupToString(void *data)
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-int compareRectangles(const void *first, const void *second)
-{
-    return 0;
-}
-int compareAttributes(const void *first, const void *second)
-{
-    return 0;
-}
-int compareGroups(const void *first, const void *second)
-{
-    return 0;
-}
-int compareCircles(const void *first, const void *second)
-{
-    return 0;
-}
-int comparePaths(const void *first, const void *second)
-{
-    return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
-
 char *attributeToString(void *data)
 {
     if (data == NULL)
@@ -2995,7 +3036,7 @@ char *circleToString(void *data)
     if (data == NULL) return NULL;
 
     Circle *circle = (Circle *)data;
-    int mem = 1000;
+    int mem = 10000;
     char *description = calloc(mem, sizeof(char));
     char buffer[100];
 
@@ -3049,7 +3090,7 @@ char *rectangleToString(void *data)
     if (data == NULL)
         return NULL;
     Rectangle *rectangle = (Rectangle *)data;
-    int mem = 1000;
+    int mem = 10000;
     char *description = calloc(mem, sizeof(char));
     char buffer[100];
 
@@ -3111,7 +3152,7 @@ char *pathToString(void *data)
     if (path->data == NULL) return NULL;
 
     char *description;
-    int mem = 1000;
+    int mem = 10000;
     description = calloc(mem, sizeof(char));
     ListIterator itr;
     char *string;
@@ -3141,6 +3182,29 @@ char *pathToString(void *data)
     strcat(description, "\0");
 
     return description;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+int compareRectangles(const void *first, const void *second)
+{
+    return 0;
+}
+int compareAttributes(const void *first, const void *second)
+{
+    return 0;
+}
+int compareGroups(const void *first, const void *second)
+{
+    return 0;
+}
+int compareCircles(const void *first, const void *second)
+{
+    return 0;
+}
+int comparePaths(const void *first, const void *second)
+{
+    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////

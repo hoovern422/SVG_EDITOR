@@ -44,7 +44,7 @@ Group *createGroup(xmlNode *curNode);
 bool buildImage(xmlNode * a_node, SVGimage *image);
 xmlDocPtr buildTree(SVGimage *image, xmlNsPtr nsPtr);
 void searchRectanglesInGroup(Group *group, List *rectList);
-void searchGroupsInGroups(Group *parentGroup, List* rectList, char* label);
+void searchGroupsInGroups(Group *parentGroup, List* rectList, elementType label);
 void freeShapesList(List *shapes);
 void searchCirclesInGroup(Group *group, List *circList);
 void searchPathsInGroup(Group *group, List *pathList);
