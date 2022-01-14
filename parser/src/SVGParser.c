@@ -11,7 +11,7 @@ do \n\
 done \n\
 "
 
-/*int main(int argc, char **argv){
+int main(int argc, char **argv){
     
     // Get all test file names and store them in a txt file.
     system(SHELLSCRIPT);
@@ -141,7 +141,7 @@ done \n\
     free(fileNames);
 
     return 0;
-}*/
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1270,7 +1270,7 @@ void searchGroupsInGroups(Group *parentGroup, List *list, elementType label){
         //if so, iterate through them.
         itr = createIterator(lptr);
 
-        // Store those groups in groupsWithinGroups.
+        // recursively call the function again for each group.
         while (itr.current){
             group = (Group *) itr.current->data;
             searchGroupsInGroups(group, list, label);

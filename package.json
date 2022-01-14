@@ -10,10 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
-    "express-fileupload": "^0.4.0",
+    "express-fileupload": "^1.2.1",
     "ffi-napi": "^2.4.5",
     "http": "0.0.0",
-    "javascript-obfuscator": "^0.14.3",
-    "nodemon": "^1.18.10"
+    "javascript-obfuscator": "^0.6.2",
+    "nodemon": "^2.0.15"
   }
 }
