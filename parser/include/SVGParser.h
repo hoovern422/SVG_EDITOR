@@ -9,7 +9,7 @@
 #include <libxml/xmlwriter.h>
 #include <libxml/xmlschemastypes.h>
 #include "LinkedListAPI.h"
-# include <math.h>
+#include <math.h>
 
 typedef enum COMP{
     SVG_IMAGE, CIRC, RECT, PATH, GROUP
@@ -398,9 +398,7 @@ Rectangle* JSONtoRect(const char* svgString);
 **/
 Circle* JSONtoCircle(const char* svgString);
 
-
-/* ******************************* List helper functions  - MUST be implemented *************************** */
-
+//helper functions
 void deleteAttribute( void* data);
 char* attributeToString( void* data);
 int compareAttributes(const void *first, const void *second);

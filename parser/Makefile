@@ -1,12 +1,9 @@
-#Nickolas Hoover
-#student number: 1024486
-#email:hoovern@uoguelph.ca
-
 CFLAGS = -Wall -g -std=c11
 BIN = bin/
 INC = include/
 SRC = src/
 XML_PATH = /usr/include/libxml2
+EMSCRIPTEN_PATH = emscripten/system/include
 
 # Standard common makefile
 parser: $(BIN)libsvgparse.so

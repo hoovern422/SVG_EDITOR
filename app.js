@@ -1,7 +1,7 @@
-'use strict'  
- 
-// C library API 
-const ffi = require('ffi');
+'use strict'
+
+// C library API
+const ffi = require('ffi-napi');
 
 // Express App (Routes)
 const express = require("express");
@@ -26,7 +26,6 @@ app.get('/',function(req,res){
 
 // Send Style, do not change
 app.get('/style.css',function(req,res){
-  //Feel free to change the contents of style.css to prettify your Web app
   res.sendFile(path.join(__dirname+'/public/style.css'));
 });
 
@@ -69,8 +68,6 @@ app.get('/uploads/:name', function(req , res){
   });
 });
 
-////////////////////////////
-
 //Sample endpoint
 app.get('/someendpoint', function(req , res){
   let retStr = req.query.name1 + " " + req.query.name2;
@@ -78,31 +75,6 @@ app.get('/someendpoint', function(req , res){
     foo: retStr
   });
 });
-
-app.get('/upload', function(req , res){
-  fs.readdir(path, function(err, items) {
-    for (var i=0; i<items.length; i++) {
-        var file = path + '/' + items[i];
- 
-        console.log("Start: " + file);
-        fs.stat(file, generate_callback(file));
-    }
-});
- 
-function generate_callback(file) {
-    return function(err, stats) {
-            console.log(file);
-            console.log(stats["size"]);
-        }
-};
-});
-
-function generate_callback(file){
-  return function(err, stats){
-    console.log(file);
-    console.log(stats["size"]);
-  }
-}
 
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);

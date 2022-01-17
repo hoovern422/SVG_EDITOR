@@ -1,7 +1,7 @@
 {
-  "name": "a3",
+  "name": "svgapp",
   "version": "1.0.0",
-  "description": "CIS2750 W18 - A3",
+  "description": "SVG EDITOR Web Application",
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js"
@@ -9,11 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.2",
-    "express-fileupload": "^1.2.1",
-    "ffi-napi": "^2.4.5",
-    "http": "0.0.0",
-    "javascript-obfuscator": "^0.6.2",
+    "express": "^4.17.2",
+    "express-fileupload": "1.2.1",
+    "ffi-napi": "^4.0.3",
+    "http": "0.0.1-security",
+    "javascript-obfuscator": "^3.0.0",
     "nodemon": "^2.0.15"
   }
 }
