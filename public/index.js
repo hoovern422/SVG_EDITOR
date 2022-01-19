@@ -1,31 +1,83 @@
 // Put all onload AJAX calls here, and event listeners
 $(document).ready(function() { 
-    // On page-load AJAX Example 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    // Get the number of files in the uploads folder.
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/someendpoint',   //The server endpoint we are connecting to
+        url: '/get_num_files',   //The server endpoint we are connecting to
         data: {
-            name1: "Value 1",
-            name2: "Value 2"
+            str: " "
         },
+
+        // Get each file's name.
         success: function (data) {
-            /*  Do something with returned object
-                Note that what we get is an object, not a string, 
-                so we do not need to parse it on the server.
-                JavaScript really does handle JSONs seamlessly
-            */
-            $('#blah').html("On page load, received string '"+data.foo+"' from server");
-            //We write the object to the console to show that the request was successful
-            console.log(data); 
+
+            numFiles = JSON.parse(data.ret).value;
+
+            for (var i = 0; i < numFiles; i ++){
+                
+                // Create the necessary info for the file log panel for each image.
+                $.ajax({
+                    type: 'get',
+                    dataType: 'json',       
+                    url: '/get_file_name',   
+                    data: {
+                        index: i
+                    },
+                    success: function (data) {
+
+                        fileName = data.foo;
+                        console.log(fileName);
+
+                        // Create the href links for the first two cells of each row in file log panel
+                        imgSrc = '<a href="' + fileName + '"><img src="' + fileName
+                                  + '" width="200"></img></a>';
+                        downloadLink = '<a href="'+ fileName + '">' + fileName + '</a>';
+
+                        // Get info about the current SVG image
+                        $.ajax({
+                            type: 'get',
+                            dataType: 'json',       
+                            url: '/get_file_info',   
+                            data: {
+                                name: fileName
+                            },
+                            success: function (data) {
+
+                                svgInfo = JSON.parse(data.foo);
+                                console.log(svgInfo);
+
+                                /*addRowToLogPanel(imgSrc, downloadLink, svgInfo.fileSize,
+                                              svgInfo.numRect, svgInfo.numCirc,
+                                              svgInfo.numPaths, svgInfo.numGroups);*/
+                            },
+                            fail: function(error) {
+                                console.log(error); 
+                            }
+                        });
+                        
+
+            
+                    },
+                    fail: function(error) {
+                        console.log(error); 
+                    }
+                });
+
+            }
 
         },
+
+        // Print the error message.
         fail: function(error) {
-            // Non-200 return, do something with error
-            $('#blah').html("On page load, received error from server");
             console.log(error); 
         }
     });
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
@@ -38,9 +90,8 @@ $(document).ready(function() {
         });
     });
 });
+  
 
-//We register a callback function for the click event of
- //the element 'clickMe' - i.e. our button
 var count = 0;
 var Emoji_pooTitle = "";
 var quad01_A2Title = "";
@@ -59,14 +110,6 @@ var hen_and_chicksDescription = "";
 
 function randNum(){
     return (Math.floor(Math.random* 10) + 1);
-}
-
-function populateTable(){
-    var inputs = ['<a href="Emoji_poo.svg"><img src="Emoji_poo.svg" width="200"></img></a>', '<a href="Emoji_poo.svg">Emoji_poo.svg</a>', "1KB", "0", "2", "6", "1",    '<a href="quad01_A2.svg"><img src="quad01_A2.svg" width="200"></img></a>', '<a href="quad01_A2.svg">quad01_A2.svg</a>', "1KB", "1", "5", "2", "3",    '<a href="Emoji_party_A2.svg"><img src="Emoji_party_A2.svg" width="200"></img></a>', '<a href="Emoji_party_A2.svg">Emoji_party_A2.svg</a>', "3KB", "0", "0", "21", "2",    '<a href="Emoji_grinning.svg"><img src="Emoji_grinning.svg" width="200"></img></a>', '<a href="Emoji_grinning.svg">Emoji_grinning.svg</a>', "1KB", "0", "3", "4", "1",   '<a href="Emoji_shades.svg"><img src="Emoji_shades.svg" width="200"></img></a>', '<a href="Emoji_shades.svg">Emoji_shades.svg</a>', "1KB", "0", "0", "3", "0",  '<a href="vest.svg"><img src="vest.svg" width="200"></img></a>', '<a href="vest.svg">vest.svg</a>', "147KB",   "0", "0", "81", "2",    '<a href="hen_and_chicks.svg"><img src="hen_and_chicks.svg" width="200"></img></a>', '<a href="hen_and_chicks.svg">hen_and_chicks.svg</a>', "78KB", "0", "0", "129", "3",]
-    var num = 7;
-    for (var i = 0; i < num; i ++){
-        addRowToLogPanel(inputs[0 + i*7], inputs[1 + i*7], inputs[2 + i*7], inputs[3 + i*7], inputs[4 + i*7], inputs[5 + i*7], inputs[6 + i*7]);
-    }
 }
 
 function addDropdownItems(name){

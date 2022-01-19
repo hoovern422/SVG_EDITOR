@@ -41,6 +41,9 @@ Group *createGroup(xmlNode *curNode);
 **/
 
 //helper functions
+char *getNumSVGFiles();
+char *getSVGName(int index);
+char *getSVGInfo(char *fileName);
 bool buildImage(xmlNode * a_node, SVGimage *image);
 xmlDocPtr buildTree(SVGimage *image, xmlNsPtr nsPtr);
 void searchRectanglesInGroup(Group *group, List *rectList);

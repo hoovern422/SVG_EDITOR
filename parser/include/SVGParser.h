@@ -370,7 +370,7 @@ char* groupListToJSON(const List *list);
 *@return A string in JSON format
 *@param event - a pointer to an SVGimage struct
 **/
-char* SVGtoJSON(const SVGimage* image);
+char* SVGtoJSON(const SVGimage* image, char *filePath);
 
 /* ******************************* Bonus A2 functions - optional for A2 *************************** */
 

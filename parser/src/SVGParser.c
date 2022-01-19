@@ -4,20 +4,20 @@
 
 #define SHELLSCRIPT "\
 #/bin/bash \n\
-{ echo \"\"; } 2> /dev/null > testFileNames.txt\n\
-for file in include/A2-compliantTestFiles/* \n\
+{ echo \"\"; } 2> /dev/null > SVGFileNames.txt\n\
+for file in parser/include/A2-compliantTestFiles/* \n\
 do \n\
-{ echo \"$(basename \"$file\")\"; } 2> /dev/null >> testFileNames.txt\n\
+{ echo \"$(basename \"$file\")\"; } 2> /dev/null >> SVGFileNames.txt\n\
 done \n\
 "
-
+/*
 int main(int argc, char **argv){
     
     // Get all test file names and store them in a txt file.
     system(SHELLSCRIPT);
 
     // Read file names in the parser.
-    FILE *fptr = fopen("testFileNames.txt", "r");
+    FILE *fptr = fopen("SVGFileNames.txt", "r");
     fseek(fptr, 0, SEEK_SET);
 
     if (!fptr){
@@ -141,6 +141,94 @@ int main(int argc, char **argv){
     free(fileNames);
 
     return 0;
+}*/
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+char *getNumSVGFiles(){
+
+    system(SHELLSCRIPT);
+
+    FILE *fptr = fopen("SVGFileNames.txt", "r");
+    fseek(fptr, 0, SEEK_SET);
+
+    if (!fptr){
+        printf("Error opening file.\n");
+        return NULL;
+    }
+
+    char line [256] = "";
+    char *jsonBuffer = calloc(25, sizeof(char));
+    int numFiles = 0;
+
+    while (fgets(line, sizeof(line), fptr)){
+
+        //fgets doesn't cut off the '\n', so we need to manually do it.
+        line[strlen(line) - 1] = '\0';
+
+        if (strcmp(line, "\0") != 0){
+            numFiles ++;
+        }
+    }
+
+    fclose(fptr);
+    
+    sprintf(jsonBuffer, "{\"value\":\"%d\"}", numFiles);
+
+    return jsonBuffer;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+char *getSVGName(int index){
+
+    // Open and read the text file.
+    FILE *fptr = fopen("SVGFileNames.txt", "r");
+    fseek(fptr, 0, SEEK_SET);
+
+    if (!fptr){
+        printf("Error opening file.\n");
+        return NULL;
+    }
+
+    char line [256] = "";
+    char *fileName = NULL;
+    int counter = 0;
+
+    while (fgets(line, sizeof(line), fptr)){
+
+        //fgets doesn't cut off the '\n', so we need to manually do it.
+        line[strlen(line) - 1] = '\0';
+
+        if (strcmp(line, "\0") != 0){
+
+            if (counter == index){
+                fileName = calloc(strlen(line) + 1, sizeof(char));
+                strncpy(fileName, line, strlen(line) + 1);
+                break;
+            }
+
+            counter ++;
+
+        }
+    }
+
+    fclose(fptr);
+
+    return fileName;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+char *getSVGInfo(char *fileName){
+
+    char schemaFile [50] = "./schema_file/svg.xsd";
+    char filePath [50] = "./uploads/";
+    strcat(filePath, fileName);
+    SVGimage *image = createValidSVGimage(filePath, schemaFile);
+    char *retStr = SVGtoJSON(image, filePath);
+
+    return retStr;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -2268,13 +2356,19 @@ char* groupToJSON(const Group *g){
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-char* SVGtoJSON(const SVGimage* image){
+char* SVGtoJSON(const SVGimage* image, char *filePath){
 
-    if (image == NULL){
+    if (!image || !filePath){
         char *ret = calloc(3, sizeof(char));
         strcpy(ret, "{}");
         return ret;
     }
+
+    FILE *fptr = fopen(filePath, "r");
+    fseek(fptr, 0, SEEK_SET);
+    fseek(fptr, 0, SEEK_END);
+    int fileSize = (int) ftell(fptr);
+    fclose(fptr);
 
     int numRect = 0, numCircles = 0, numPaths = 0, numGroups = 0;
 
@@ -2292,21 +2386,29 @@ char* SVGtoJSON(const SVGimage* image){
 
     lptr = NULL;
 
-    char *json = calloc(350, sizeof(char));
+    char *json = calloc(500, sizeof(char));
     char *buffer = calloc(100, sizeof(char));
 
-    strcpy(json, "{\"numRect\":");
+    strcpy(json, "{\"fileSize\":");
+    sprintf(buffer, "%d", fileSize);
+    strcat(json, buffer);
+
+    strcat(json, ",\"numRect\":");
     sprintf(buffer, "%d", numRect);
     strcat(json, buffer);
+
     strcat(json, ",\"numCirc\":");
     sprintf(buffer, "%d", numCircles);
     strcat(json, buffer);
+
     strcat(json, ",\"numPaths\":");
     sprintf(buffer, "%d", numPaths);
     strcat(json, buffer);
+
     strcat(json, ",\"numGroups\":");
     sprintf(buffer, "%d", numGroups);
     strcat(json, buffer);
+
     strcat(json, "}");
 
     free(buffer);

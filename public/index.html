@@ -2,6 +2,7 @@
 <html lang="en">
 <head> 
     <title>SVG Image Viewer</title>
+    <link rel="shortcut icon" href="#">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="SVG Image Viewer">
@@ -17,15 +18,21 @@
     <!-- Custom CSS End -->
 </head>
 
+<!-- Start of html body -->
 
 <body>
+
+    <!-- Title at top of webpage -->
     <h1>SVG Image Viewer</h1>
     <hr>
     <br>
-    <h2><b>File Log Panel</b></h2>
-    <div id="table-wrapper">
+
+    <!-- The file log panel -->
+    <div id = "fileLogPanel">
+        <h2><b>File Log Panel</b></h2>
         <table style="width:100%">
-            <!-- this is the top Row -->
+
+            <!-- this is the top row of the file log panel -->
             <thead>
                 <tr>
                 <th>Image (Click to Download)</th>
@@ -37,12 +44,20 @@
                 <th>Number of Groups</th>
                 </tr>
             </thead>
+            <!-- -------------------------------------- -->
 
-        <tbody>
-        </tbody>
+        <!-- this is the body of the file log panel -->
+        <div id = "fileLogPanelBody">
+            <tbody> 
+            </tbody>
+        </div>
+        <!-- -------------------------------------- -->
 
         </table>
     </div>
+    <!-- -------------------------------------- -->
+
+    <!-- The submit SVG Button -->
         <div id="submitSVG">
             <form ref="submitSVGform", id="submitSVGform">
                 <label for="myfile">Choose an SVG file and click submit to upload:  </label>
@@ -50,6 +65,7 @@
                 <input type="submit" class ="btn btn-secondary">
             </form>
         </div>
+    <!-- -------------------------------------- -->
     
     <div class="dropdown">
         <br>
@@ -78,7 +94,8 @@
           id='someform'>
           <div class="form-group">
                 <label for="entryBox">New SVG Image Title</label>
-                <input type="text" class="form-control" id="entryBox" value="" placeholder="Enter a title for your image">
+                <input type="text" class="form-control" id="entryBox" value="" 
+                placeholder="Enter a title for your image">
             </div>
         <div class="form-group">
             <input type='submit' class="btn btn-secondary">
@@ -89,7 +106,8 @@
           id='someform1'>
           <div class="form-group">
                 <label for="entryBox">New SVG Image Description</label>
-                <input type="text" class="form-control" id="entryBox" value="" placeholder="Enter a description for your image">
+                <input type="text" class="form-control" id="entryBox" value="" 
+                placeholder="Enter a description for your image">
             </div>
         <div class="form-group">
             <input type='submit' class="btn btn-secondary">

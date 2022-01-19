@@ -32,7 +32,8 @@ app.get('/style.css',function(req,res){
 // Send obfuscated JS, do not change
 app.get('/index.js',function(req,res){
   fs.readFile(path.join(__dirname+'/public/index.js'), 'utf8', function(err, contents) {
-    const minimizedContents = JavaScriptObfuscator.obfuscate(contents, {compact: true, controlFlowFlattening: true});
+    const minimizedContents = JavaScriptObfuscator.obfuscate(contents, 
+      {compact: true, controlFlowFlattening: true});
     res.contentType('application/javascript');
     res.send(minimizedContents._obfuscatedCode);
   });
@@ -68,13 +69,57 @@ app.get('/uploads/:name', function(req , res){
   });
 });
 
+///////////////////////////////////////////////////////////////////////////////
+
+let sharedLib = ffi.Library('./parser/bin/libsvgparse', {
+
+  'getNumSVGFiles': [ 'string', []],
+  'getSVGName': [ 'string', [ 'int' ]],
+  'getSVGInfo': [ 'string', [ 'string' ]]
+}); 
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Get the number of SVG files in the uploads directory
+app.get('/get_num_files', function(req , res){
+  let ret = sharedLib.getNumSVGFiles();
+  //ret = ret.replace(/\\/g, '');
+  res.send ({
+    ret
+  })
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Get the name of a particular SVG file
+app.get('/get_file_name', function(req , res){
+  let ret = sharedLib.getSVGName(req.query.index);
+  res.send ({
+    foo: ret
+  })
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Get the file log panel info for a particular SVG image.
+app.get('/get_file_info', function(req , res){
+  let ret = sharedLib.getSVGInfo(req.query.name);
+  res.send ({
+    foo: ret
+  })
+});
+
+///////////////////////////////////////////////////////////////////////////////
+
 //Sample endpoint
 app.get('/someendpoint', function(req , res){
   let retStr = req.query.name1 + " " + req.query.name2;
   res.send({
-    foo: retStr
+    foo: retStr 
   });
 });
 
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);
+
+///////////////////////////////////////////////////////////////////////////////
